@@ -40,15 +40,12 @@ class Field {
     else{
         this._playerCol = currentCol;
         this._playerRow = currentRow;
-        console.log(currentRow, currentCol);
         switch(this.field[currentRow][currentCol]){
           case hat:
             return "You found the hat!";
           case hole:
             return "You feel and lost!";
-
         }
-
         this.field[currentRow][currentCol] = pathCharacter;
         this.print();
     }
@@ -58,18 +55,44 @@ class Field {
     console.log("You've lost your hat in a maze! Let's play!");
     console.log(`The avaliable commands are up, down, left and right like: ${validMoves}`);
     this.print();
-    let move = prompt("Which way?");
-
+    let movement = prompt("Which way? ");
+    let temp = this.move(movement);
+    while (!temp){
+        movement = prompt("Which way? ");
+        temp = this.move(movement);
+    }
+    console.log(temp);   
+  }
+  static generateField(rows, columns, percentage = 2/9){
+    let hatRow = 0;
+    let hatColumn = 0;
+    let field=  Array.from({length: rows}, e => Array(columns).fill(fieldCharacter));
+    if (percentage >= 1 ){
+        console.log('Invalid value for percentage of holes. Using default');
+        percentage = 2/9;
+    }
+    
+    
+    
+    let numberOfHoles = Math.floor(percentage * rows * columns);
+    while (numberOfHoles > 0){
+        let holeRow = Math.floor(Math.random() * rows);
+        let holeColumn = Math.floor(Math.random() * columns);
+        field[holeRow][holeColumn] = hole;
+        numberOfHoles--;
+    }
+    while ((hatRow === 0 & hatColumn === 0)){
+        hatRow = Math.floor(Math.random() * rows);
+        hatColumn = Math.floor(Math.random() * columns);
+    }
+    field[hatRow][hatColumn] = hat;
+    field[0][0] = pathCharacter;
+    return field;
   }
 }
 
-
-
-const f = [
-    ['*', '░', 'O'],
-    ['░', 'O', '░'],
-    ['░', '^', '░'],
-  ]
-const myField = new Field(f);
-myField.play();
+const newField = Field.generateField(5, 5, 0.2);
+console.log(newField);
+const f = new Field(newField);
+f.play();
 
